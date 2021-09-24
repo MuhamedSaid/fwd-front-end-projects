@@ -11,3 +11,4 @@ scrolling through the page the section which the user is currently at _shows som
 - [Arrow function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions).
 - [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 - [Element.scrollIntoView() method](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView).
+- [Element.scrollTop](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop).
