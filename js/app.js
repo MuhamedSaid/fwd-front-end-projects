@@ -1,11 +1,37 @@
-// *** Adding new Sections ***
+/*global variables*/
 
 const mainTag = document.querySelector('main');
+const scrollToTopBtn = document.querySelector('#scroll-to-top');
+const navTag = document.querySelector('nav');
+const header = document.querySelector('header');
+const navbarUl = document.getElementById('navbar__list');
 
-        // Function that adds the number of SECTIONS we want.
+let sections;
+let allNavLi;
+
+
+/* global functions */
+
 function addSections(num) {
-    const fragment = document.createDocumentFragment();
+    // Creating an intersection observer 
+    const options = {
+    threshold: 0.5
+    };      
+    const sectionsObserver = new IntersectionObserver(
+    (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('your-active-class');
+                } else {
+                    entry.target.classList.remove('your-active-class');
+                }
+            })
+        },
+        options
+    );
+
     if (num > 0) {
+        const fragment = document.createDocumentFragment();
         let currentSectionNum = 3;       //  number of current page sections.
         for (let i = 1; i <= num; i++) {
             
@@ -27,70 +53,89 @@ function addSections(num) {
                     consectetur porttitor. Suspendisse imperdiet porttitor tortor, eget elementum tortor mollis non.</p>
             </div>`;
 
+            newSection.setAttribute('id', `section${currentSectionNum+i}`);
+            newSection.setAttribute('data-nav', `Section ${currentSectionNum+i}`);
+
             fragment.appendChild(newSection);
         }
         
         mainTag.appendChild(fragment);
     }
-}
+    sections = document.querySelectorAll('section');
 
-addSections(3);     // adding 2 more sections
-
-// *** Building the navigation menu ***
-
-const sections = document.querySelectorAll('section');    // The current number of sections after the new ones have been added.
-const navbarUl = document.getElementById('navbar__list');
+    // applying observer on each section *** distinguish the section in view ***
+    sections.forEach(section => {
+        sectionsObserver.observe(section)
+    });
+};
 
 function createNav() {
+
+    // create navbar based on the number of sections in the page.
+
     const fragment = document.createDocumentFragment();
     let sectionCounter = 1;
 
-    for (const section of sections) {
+    sections.forEach(() => {
         const newListItem = document.createElement('li');
         const addAnchorLink = document.createElement('a');
 
         addAnchorLink.classList.add('menu__link');
         addAnchorLink.textContent = `Section ${sectionCounter}`;
         sectionCounter++;
+
         newListItem.appendChild(addAnchorLink);
 
         fragment.appendChild(newListItem);
-    }
+    })
 
     navbarUl.appendChild(fragment);
-}
+    allNavLi = document.querySelectorAll('nav ul li');
 
-createNav();
+    // scroll into view when user clicks on a section on the navbar.
+    allNavLi.forEach((li, index) => {
+        li.addEventListener('click', () => {
+            sections[index].scrollIntoView({behavior: 'smooth', block: 'start'});
+            });
+    });
 
-// *** distinguish the section in view ***
-
-let options = {
-    threshold: 0.5
 };
 
-const observer = new IntersectionObserver(
-    (entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('your-active-class');
-            } else {
-                entry.target.classList.remove('your-active-class');
-            }
-        })
-    },
-    options
-);
+addSections(3);     // adding 3 more sections
+createNav();       // creating the navigation
 
-sections.forEach(section => {
-    observer.observe(section)
+// *************************************************************************
+
+/* Hide fixed navigation bar while not scrolling */
+document.addEventListener('scroll', () => {
+    if (document.documentElement.scrollTop === 0) {
+        return
+    }
+    header.style.display = 'block';
+    let s0 = document.documentElement.scrollTop;
+    setTimeout(() => {
+        let s1 = document.documentElement.scrollTop;
+        if(s1 === s0) {
+            header.style.display = 'none';
+        };
+    }, 3000);
+    
 });
 
-// *** Scroll to sections ***
+// **************************************************************************************
 
-const allNavLi = document.querySelectorAll('nav ul li');
+/* Scroll to top button */
 
-allNavLi.forEach((li, index) => {
-    li.addEventListener('click', () => {
-        sections[index].scrollIntoView({behavior: 'smooth', block: 'start'});
-    });
-})
+document.addEventListener('scroll', () => {
+    if (document.documentElement.scrollTop < 400) {
+        scrollToTopBtn.style.display = 'none';
+    } else {
+        scrollToTopBtn.style.display = 'block';
+    }
+});
+
+scrollToTopBtn.addEventListener('click', (e) => {
+    mainTag.scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+
+// ***************************************************************************************
